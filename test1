@@ -82,3 +82,17 @@ Your LDAP subtree queries failed because anon bind is disabled.
 Keep going without creds via Kerberos userenum → AS-REP roast and SAMR null attempts.
 
 As soon as you get any creds, bind to LDAP and harvest users/SPNs, then Kerberoast and pivot to WinRM/SCMR for execution.
+
+****************************************************************************************
+# 1) See where Go put it
+go env GOPATH GOBIN
+ls -l "$(go env GOBATH 2>/dev/null || echo $(go env GOPATH))/bin"  # usually /root/go/bin
+
+# 2) Add that bin dir to PATH (zsh in your screenshot)
+export PATH="$PATH:$(go env GOPATH)/bin"          # works for this session
+echo 'export PATH="$PATH:$(go env GOPATH)/bin"' >> ~/.zshrc
+source ~/.zshrc
+
+# 3) Verify
+which kerbrute
+kerbrute --help
