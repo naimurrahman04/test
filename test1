@@ -17,6 +17,11 @@ ldapsearch -x -H ldap://10.30.7.10:3268 -b "DC=hero,DC=local" -s sub -LLL \
 ldapsearch -x -H ldap://10.30.7.10:3268 -b "DC=hero,DC=local" -s sub -LLL \
 '(servicePrincipalName=*)' sAMAccountName servicePrincipalName
 
+
+
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 You hit “Operations error … a successful bind must be completed” — that means the DC allows RootDSE reads but blocks anonymous subtree queries. So LDAP will only give you real data after you authenticate (simple bind or Kerberos). Two paths from here:
 
 A) No-creds path (what you can do right now)
@@ -82,6 +87,10 @@ Your LDAP subtree queries failed because anon bind is disabled.
 Keep going without creds via Kerberos userenum → AS-REP roast and SAMR null attempts.
 
 As soon as you get any creds, bind to LDAP and harvest users/SPNs, then Kerberoast and pivot to WinRM/SCMR for execution.
+
+
+
+
 
 ****************************************************************************************
 # 1) See where Go put it
