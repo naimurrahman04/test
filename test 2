@@ -1,0 +1,2 @@
+# Example (adjust script-args names for your version; check script help)
+sudo nmap --script ftp-bounce --script-args "ftp.user=admin,ftp.pass=admin,ftp.bounce=169.254.131.67:10794" -p 21 10.30.7.25
